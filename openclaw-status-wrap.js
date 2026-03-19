@@ -226,12 +226,25 @@ class OpenClawWrapper {
     let command = 'node';
     let cmdArgs;
     
-    if (process.platform === 'win32') {
-      // Windows: 使用QClaw的openclaw.mjs
+    // 灵活路径检测
+    const openclawPath = process.env.OPENCLAW_PATH;
+    
+    if (openclawPath) {
+      // 用户自定义路径
+      if (openclawPath.endsWith('.mjs') || openclawPath.endsWith('.js')) {
+        command = 'node';
+        cmdArgs = [openclawPath, 'agent', ...args];
+      } else {
+        command = openclawPath;
+        cmdArgs = ['agent', ...args];
+      }
+    } else if (process.platform === 'win32') {
+      // Windows默认路径 - QClaw
       const openclawMjs = 'C:\\Program Files\\QClaw\\resources\\openclaw\\node_modules\\openclaw\\openclaw.mjs';
       cmdArgs = [openclawMjs, 'agent', ...args];
     } else {
       // Linux/Mac: 尝试使用openclaw命令
+      command = 'openclaw';
       cmdArgs = ['agent', ...args];
     }
     
