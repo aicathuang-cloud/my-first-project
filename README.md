@@ -1,55 +1,100 @@
-# Task Status Indicator 🦐
+# Open Claw 进度条
 
-OpenClaw 极简任务状态可视化工具。
+一个简单、可定制的命令行进度条，用于显示任务执行进度。
 
+## 特性
+
+- 可定制的进度条宽度
+- 可自定义填充和空槽字符
+- 支持前缀和后缀文本
+- 实时更新进度
+- 简单易用的API
+
+## 安装
+
+将 `progress-bar.js` 文件复制到您的项目中，然后通过 require 引入：
+
+```javascript
+const OpenClawProgressBar = require('./progress-bar');
 ```
-[🦐 腾云虾] 正在执行: browser.snapshot | 已耗时 12s | 工具链: browser → eval
-[████████░░] 步骤 3 | 最后活动: 2s 前
+
+## 使用方法
+
+### 基本用法
+
+```javascript
+const bar = new OpenClawProgressBar({
+  total: 100,  // 总进度值
+  prefix: '任务进度: ',  // 前缀文本
+  suffix: '完成'  // 后缀文本
+});
+
+// 更新进度
+bar.update(50);  // 更新到50%
+
+// 增加进度
+bar.increment();  // 增加1%
+
+// 完成任务
+bar.done();  // 更新到100%并换行
 ```
 
-## 快速开始
+### 自定义选项
+
+```javascript
+const bar = new OpenClawProgressBar({
+  total: 50,          // 总进度值
+  width: 30,          // 进度条宽度
+  fill: '■',          // 填充字符
+  empty: '□',         // 空槽字符
+  prefix: '处理中: ',  // 前缀文本
+  suffix: '剩余 50 项' // 后缀文本
+});
+```
+
+## 示例
+
+运行 `example.js` 查看使用示例：
 
 ```bash
-# 1. 安装
-./install.sh
-
-# 2. 使用
-node openclaw-status-wrap.js
-
-# 或使用别名（安装时设置）
-ocs
+node example.js
 ```
 
-## 文件说明
+## API
 
-| 文件 | 用途 |
-|------|------|
-| `openclaw-status-wrap.js` | 主入口 - 包装器模式 |
-| `status-renderer.js` | 状态条渲染引擎 |
-| `task-monitor.js` | 独立监控器（备用） |
-| `install.sh` | 安装脚本 |
-| `test.js` | 单元测试 |
+### 构造函数
 
-## 工作原理
-
-包装器拦截 OpenClaw 的输出，解析工具调用事件，实时更新终端底部的状态条。
-
-```
-用户输入 → [包装器] → OpenClaw
-              ↓
-         解析输出 → 更新状态条
+```javascript
+new OpenClawProgressBar(options)
 ```
 
-## 状态条格式
+**选项**：
+- `total`：总进度值，默认为100
+- `width`：进度条宽度，默认为50
+- `fill`：填充字符，默认为'█'
+- `empty`：空槽字符，默认为' '
+- `prefix`：前缀文本，默认为'Progress: '
+- `suffix`：后缀文本，默认为''
 
-- **运行中**: 显示工具名、耗时、工具链、步骤、进度条
-- **完成**: ✅ 定格显示耗时和步骤数
-- **失败**: ❌ 显示错误类型
+### 方法
 
-## 自定义
+- `update(progress)`：更新进度到指定值
+- `increment(amount)`：增加指定数量的进度，默认为1
+- `render()`：渲染进度条（内部使用）
+- `done()`：完成任务，更新到100%并换行
 
-编辑 `status-renderer.js` 修改：
-- 表情符号 (`emoji`)
-- 名字 (`agentName`)
-- 刷新间隔 (`refreshIntervalMs`)
-- 脉冲阈值 (`pulseThresholdMs`)
+## 示例输出
+
+```
+示例1：基本用法
+任务进度: [██████████████████████████████████████████████████] 100% 完成
+任务1完成
+
+示例2：自定义样式
+处理中: [■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] 100% 剩余 0 项
+任务2完成
+
+示例3：使用increment方法
+下载进度: [██████████████████████████████████████████████████] 100% 20MB
+任务3完成
+```
